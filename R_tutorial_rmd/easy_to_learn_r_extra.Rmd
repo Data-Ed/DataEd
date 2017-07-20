@@ -1,0 +1,126 @@
+---
+title: "補充教材"
+author: "Will Kuan"
+date: "2017年7月18日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 叫所有變數踹共
+
+
+雖然RStudio介面很厲害，我們要找尋已經存在的變數時，只需要在『Environment』視窗查詢即可，不過有時我們也想藉由輸入指令來尋找變數的話，該怎麼做?<br>
+在console中輸入<font color='red'>ls( )</font>函數可幫助我們列舉出所有已存在的變數名稱，對於熟悉linux的使用者而言，這函數與linux的ls指令是一樣的，也就是list(列舉)所有檔案意思。
+
+```{r results='hide'}
+# 安裝套件
+install.packages('magrittr', repos = "http://cran.us.r-project.org")
+
+# 匯入套件
+library(magrittr)
+```
+```{r}
+# 建立100個變數(EXTRA)
+for(i in 1:100) {
+  # 建立流水號
+  token <- as.character(i) %>% 
+    nchar(.) %>% 
+    (function(x){3-x}) %>% 
+    numeric() %>%
+    as.character() %>% 
+    paste(., collapse="") %>% 
+    paste(., i, collapse="", sep="") 
+  
+  # 建立變數名稱
+  tmp <- paste("var", token, sep = ".")
+  
+  # 替變數賦值
+  assign(tmp, sample(1:i,1))
+}
+
+# 刪除暫存變數
+rm(i,tmp,token)
+```
+
+```{r}
+# 列舉目前工作環境中存在的所有非隱藏變數
+ls()
+```
+
+```{r results='hide',echo=FALSE}
+rm(list=ls())
+```
+
+## 刪除變數
+
+
+<font color="red">rm( )</font>函數可用來刪除已存在的物件。
+
+```{r}
+# 宣告三個變數(x, y, z)，並指派隨機數值
+x <- sample(1:100,1)
+y <- sample(1:100,1)
+z <- sample(1:100,1)
+```
+
+```{r}
+# 檢視目前存在的變數
+ls()
+
+# 刪除變數y的物件
+rm(y)
+
+# 檢視目前存在的變數
+ls()
+
+# 刪除所有存在的物件
+rm(list=ls())
+
+# 檢視目前存在的變數
+ls()
+```
+
+
+<font color='red'>附註</font>: 有時當我們對程式碼的問題想破頭時，可能需要求助於他人，經常會傳送整段程式碼給對方，請對方幫忙檢查。這時，若我們程式碼中含有 __rm(list=ls())__ 這段指令，若對方沒有注意到的話，可能會造成對方資料的遺失，所以即便在網路上也要記得有禮貌，不要傳送類似  __rm(list=ls())__ 的程式碼造成對方困擾喔!
+
+
+## 查詢使用說明書
+
+
+如果我們對某個函數或套件內建資料集有疑問的話，除了Google大神可以求助，還有什麼方法可以幫助我們了解函數或資料集的使用?<br>
+在R裡，要查詢不懂的東西，解決的方法其實滿直覺的，就是我們日常生活常用的『問號』。<br>
+
+
+__『<font color='red'>?</font>』就是查詢的指令，使用方法就是在你不懂的東西前面加上一個問號。<br>__
+如果我們連不懂的東西都忘記怎麼拼怎麼辦?對於這點，R也算滿貼心的，我們可以使用模糊查詢指令，使用方法就是在我們要查的東西前面加兩個問號。
+
+```{r results='hide', message=FALSE}
+# 查詢summary()函式的使用說明書
+?summary
+
+# 如果忘記summary怎麼拼的話怎麼辦? 那就用模糊查詢吧!
+# 我只記得summary是sum...，那就用sum來查詢吧!
+??sum
+
+# 我只記得summary是...mary，那就用mary來查詢吧!
+??mary   
+```
+
+### NA vs. NaN vs. NULL
+
+
+分析資料容易嗎?可能不容易，最不容易的一點是要將原始資料變成可以分析的資料，這中間過程需要經過很多的處理與轉換。實際上很常遇到的一個情況就是遺失值(遺漏值、缺失值，Missing Value)，如果資料是經由人工收集的，那就要有處理遺失值的心理準備，即便資料的收集是程式在處理，也不敢保證程式的邏輯是符合需求的，那麼處理遺失值就是一門必修的課題了。不過我們先不談如何處理，這裡我們先了解R如何標註遺失值。<br>
+
+在輸入或輸出值，如果有遺失值，R是以 __NA__ 來表示，也就是『Not Available』的意思。<br>
+
+除了遺失值，R還會標註甚麼奇怪的值呢?<br> 
+__NaN__ 表示0/0的窘境，也就是『Not a Number』， __NULL__ 為空物件(null object)。
+
+### Inf vs. -Inf
+
+
+Inf就是infinite的縮寫，也就是無限大的概念；那-Inf勢必就是負無限大了。
+

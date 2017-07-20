@@ -1,0 +1,60 @@
+---
+title: "Let’s enteR"
+author: "Will Kuan"
+date: "2017/6/13"
+output: html_document
+---
+
+## 什麼是![](./R_logo.svg.png)
+######(可以吃嗎)
+
+------
+
+*“The great beauty of R is that you can modify it to do all sorts of things. And you have a lot of prepackaged stuff that's already available, so you're standing on the shoulders of giants.” -- said Hal Ronald Varian, chief economist at Google*
+
+------
+
+> ### R的起源
+  + 主要以S語言為基礎開發
+  + 自由軟體GNU專案
+
+> ### R的特性
+  + 函數式語言(Functional Programming)
+  + 直譯式語言(Interpreted Language)
+  + 物件導向語言(Object-Oriented)
+
+> ### R的應用
+  + 統計分析 
+  + 資料分群
+  + 資料分類
+  + 資料視覺
+  + 協同過濾
+  + 文字探勘
+  + 機器學習
+  + 深度學習
+
+***
+  
+## 越來越夯的![](./R_logo.svg.png)
+######(是有多好吃啊)
+
+> ### 最火熱的資料分析工具
+![](./lang_rank.png)
+
+> ### Kaggle比賽最廣為使用的語言
+![](./kaggle.png)
+
+> ### 矽谷也愛用
+![](./apple_job.png)
+
+> ### 微軟的大力整合
+![](./rpowerbi.png)
+
+> ### RStudio的肩膀
+![](./RStudio.png)
+
+> ### `open` 與 `sharing` 的世界趨勢
+#####R的視覺化實務應用
+![](./remap.png)
+
+

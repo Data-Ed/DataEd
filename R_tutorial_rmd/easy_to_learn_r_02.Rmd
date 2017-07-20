@@ -1,0 +1,263 @@
+---
+title: "Let’s go R coding"
+author: "Will Kuan"
+date: "2017/7/2"
+output: html_document
+---
+
+
+### <font color="red">範例一</font>
+
+> *真實的世界是個由許多現象、許多東西組成的複合體，這個複合體遠比我們想像中的複雜，而數學這個工具，有些人覺得它複雜抽象，但其實數學是將這個複雜世界抽絲剝繭，將這個複合體分解，用最簡單的視角解釋各種現像，而數學抽象的原因是因為我們不習慣用數學的角度去了解這世界如何運行，寫程式其實就像用數學了解世界一樣，密密麻麻的程式碼就像是由許多單一功用的螺絲組合而成的多功能機器。*
+
+#### 天氣預報其實不簡單，但我們可以先以簡單的方式預測天氣，並用已經學過的技巧輔助。
+#### 假設前一天的天氣狀況會影響當天的天氣，那麼今天(day10)是晴天的情況下，明天是雨天的可能性是多少？<br>
+
+```{r}
+# 先用人工手動的方式記錄每天的天氣狀況。
+# 當我們用人工的方式紀錄及匯入資料，就得要有心理準備預期會有99%的可能性出現錯誤。
+# 未來我們將學習藉由程式自動記錄並匯入資料，以降低出現錯誤的可能性。
+weather.stats <- c("sunny", "sunny", "rainy", "sunny", "cloudy", "cloudy", "sunny", "cloudy", "sunny", "sunny")
+
+names(weather.stats) <- c('day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7', 'day8', 'day9', 'day10')
+
+# 找尋天氣狀況為晴天的日子
+weather.stats[weather.stats == "sunny"] 
+
+# 由上一步驟得知day1, day2, day4, day7, day9, day10為晴天
+# 藉由取得前一天是晴天的情況下，觀察隔天的天氣狀況。
+(possible.outcome <- weather.stats[c("day2", "day3", "day5", "day8", "day10")])
+
+# 在前一天是晴天的情況下，有哪幾天隔天會是雨天?
+(set.rainy <- possible.outcome[possible.outcome == "rainy"])  
+
+# 今天(day10)是晴天的情況下，明天是雨天的可能性
+(possibility.rainy <- length(set.rainy)/length(possible.outcome)) 
+```
+
+<br>
+
+#### 以上過程，有哪些步驟是不夠聰明，不夠懶?
+
+<br>
+*寫程式有一個重要的精神，也就是工程師的精神，就是懶。懶的原則就是能只做一次絕不做第二次，能自動化能動態絕不hard code，這個原則就是讓程式越好越好的關鍵之一。*
+
+<br><font color="red">使用以下兩個函數試著讓以上步驟更輕鬆</font>
+
+函數    |功用                                            |範例
+--------|------------------------------------------------|---------------------------------
+paste( ) |將多個字串黏貼成一個字串                        |paste("Hello", "World", sep=",")
+which( ) |提出一個條件，找出向量中符合此條件的元素之索引值|which(weather.stats == "cloudy")
+
+
+<font color="blue">重構後的程式碼:</font><br>
+```{r}
+weather.stats <- c("sunny", "sunny", "rainy", "sunny", "cloudy", "cloudy", "sunny", "cloudy", "sunny", "sunny")
+
+names(weather.stats) <- paste("day", 1:10, sep="")
+
+# 找尋天氣狀況為晴天的日子
+( index.sunny <- which(weather.stats == "sunny") ) 
+
+# 藉由取得前一天是晴天的情況下，觀察隔天的天氣狀況。 
+index.afterSunny <- index.sunny + 1
+(possible.outcome <- weather.stats[index.afterSunny])
+
+# 移除掉NA的狀況，因為紀錄上沒有第11天，所以day11是會是NA值
+(possible.outcome <- possible.outcome[!is.na(possible.outcome)])
+
+# 在前一天是晴天的情況下，有哪幾天隔天會是雨天?
+(set.rainy <- possible.outcome[possible.outcome == "rainy"])  
+
+# 今天(day10)是晴天的情況下，明天是雨天的可能性
+(possibility.rainy <- length(set.rainy)/length(possible.outcome)) 
+```
+
+以上藉由前一天天氣狀況來預測隔天天氣的分析步驟，概念上看似簡單，但其實像是文字探勘(Text Mining)的處理手法卻真的會用上述簡單的概念進行分析及預測喔。
+
+經過重構後的程式碼還有沒有更好的空間？有的，未來接觸更多R的資料結構，如data.frame等更好用的盒子，我們在儲存資料、提取資料，甚至移動資料都會有更簡易使用的技巧。
+
+### <font color="red">範例二</font>
+
+> *探索性資料分析(Exploratory Data Analysis，EDA)是開始分析資料前常見的一個步驟，也是非常重要的步驟。有時，EDA對後續分析有極大的影響，是決定成敗的關鍵。ggplot2是以圖層概念原理將資料視覺化的套件，此套件可讓使用者更有彈性繪製出客製化圖表。*
+
+此範例參考自Jared P. Lander著的R for Everyone: Advanced Analytics and Graphics一書。
+```{r message=FALSE, warning=FALSE, results='hide'}
+# 安裝所需套件
+# 因為製作講義的緣故，所以需要加上鏡像站參數，一般安裝套件只需輸入install.packages('ggplot2')
+install.packages('ggplot2', repos = "http://cran.us.r-project.org") 
+install.packages('ggthemes', repos = "http://cran.us.r-project.org")
+
+# 匯入所需套件
+library(ggplot2)
+library(ggthemes)
+```
+```{r}
+# 『diamonds』是ggplot2套件內的diamonds資料集. 輸入『diamonds』和 『?diamonds』了解更多此資料集資訊 
+# 檢視diamonds前十筆資料以快速了解此資料集
+head(diamonds, 10)
+
+# 使用ggplot2繪製底層圖層
+myPlot <- ggplot(diamonds, aes(x=carat, y=price)) + geom_point(aes(color=color))
+
+# 增加主題圖層美化圖表
+myPlot + theme_solarized()                                # The Solarized palette style
+
+### 嘗試以下範例檢視更多主題風格 
+# myPlot + theme_economist() + scale_colour_economist()   # The Economist magazine style
+# myPlot + theme_excel() + scale_colour_excel()           # The Excel style
+# myPlot + theme_tufte()                                  # Edward Tufte style
+# myPlot + theme_wsj()                                    # The Wall Street Journal style
+```
+
+### <font color="red">範例三</font>
+
+R是一個開放原始碼的軟體(Open Source)，也因如此，世界各地的人都能為這軟體撰寫套件並增強其功能。
+除了ggplot2以外，Dawei Lang基於中國Baidu提供旗下Echarts的API所開發的套件<font color="blue">REmap</font>也是非常有趣的套件，此套件提供了ggplot2沒有的動態展示功能。
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+# 安裝所需套件
+install.packages(c('devtools', 'XML'), repos = "http://cran.us.r-project.org")  
+
+# 匯入所需套件
+library(devtools) 
+
+# 匯入devtools套件後，藉由此套件則可從github上安裝所需套件REmap
+install_github('lchiffon/REmap')
+
+# 匯入REmap
+require(REmap)  
+```
+
+
+**librayr() vs. require()**
+
+一般來說，兩者並無差別，唯一的差別在於使用library()時，若無套件可安裝則會出現錯誤訊息，並停止安裝；但使用require()時，若無套件可安裝則回傳警告並繼續安裝，安裝結束後輸入套件名稱則回傳邏輯值，若此套件成功安裝於系統則回傳TRUE，若無此套件則回傳FALSE。<br>
+基本上來說，建議在撰寫函數中使用require()，因為當套件無法安裝時，require()只會回傳警告訊息，並不會中斷程式影響函式內部運行。<br>
+
+__在繪圖之前，我們先了解一下REmap套件有提供那些方法，以及如何使用。__ <br>
+```{r message=FALSE, warning=FALSE}
+# 宣告一變數，並指派一向量指向此變數 
+(city.vec = c("北京","Shanghai","廣州"))
+
+# get_city_coord()為REmap套件提供的函數, 此函數可用於取得城市地理經緯度
+get_city_coord("Shanghai") 
+
+# get_geo_position()為'REmap'套件提供的函數，此函數可用於取得多個城市的經緯度，並以data.frame型態回傳結果 
+get_geo_position (city.vec)
+```
+
+__以下開始繪圖主程式__ <br>
+```{r message=FALSE, warning=FALSE, results='hide'}
+# 設定隨機種子以固定隨機結果 
+# 大部分情況下，使用set.seed()方法設定隨機種子的情境在於展示或除錯，
+# 目的在於維持相同的結果免於POC或co-work時無法展現預期的效果或出現不同的結果以致無法複製情境順利除錯
+set.seed(25)
+
+# 設定初始城市(即發送點)，以及接收城市數(即發送次數)
+origin <- rep("Beijing", 10)
+
+# 設定目的地城市(即接收點)
+destination <- c('上海','廣州','大連','南寧','南昌',
+                 '四川','長春','包頭','重慶','常州')
+
+# 結合兩向量(初始城市向量+目的地城市向量)，合成為一個表格供繪圖使用。
+# data.frame是R內建資料結構中符合需求，同時也最適合儲存繪圖參考資料集。
+data <- data.frame(origin,destination)
+
+# remap是REmap套件提供的一個函式，同時也是最主要的繪圖函式。
+# 用法:remap(mapdata, title, subtitle, theme)
+# 參數說明:
+# mapdata: 需要data frame格式資料，並包含兩欄位，其一欄位為出發點，目的地作為第二欄位。
+# title: 字串型態資料，內容將作為圖表的主標題。
+# subtitle: 字串型態資料，內容將作為圖表的子標題
+# theme: 主題樣式，可決定將以何種風格顏色呈現地圖。可使用get_theme()函式建立一個串列物件，
+#        此串列物件將包含主題樣式風格的詳細設定資訊。
+out <- remap(mapdata=data, title="貨物運送圖", subtitle="我是範例", theme=get_theme("Dark"))
+
+# 使用plot()函數繪製圖形
+plot(out)
+```
+
+### <font color="red">範例四</font>
+
+實際在分析銷售數據時，我們時常會想瞭解各種變數與銷售量銷售額之間的相關程度，如每日線上瀏覽數與銷售額，以便調整營銷策略提高銷售。以下範例參考自Chris Chapman與Elea McDonnell Feit共同所著之「R for Marketing Research and Analytics」一書。
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+# tidyverse套件裡包含裡許多非常好用的套件，如readr, stringr, ggplot2, tibble, rvest, dplyr, ...等。
+# 基本上，安裝這一個套件，就等於擁有所有好用的套件了。
+install.packages('tidyverse', repos = "http://cran.us.r-project.org")
+
+# 另外再安裝psych套件，使用psych提供的實用函數describe()檢視資料集粗略結構
+install.packages('psych', repos = "http://cran.us.r-project.org")
+
+# 匯入所需套件
+require(readr)
+require(ggplot2)
+require(psych)
+
+# 使用readr套件提供的『read_csv』方法從網站直接讀取範例銷售數據
+cust.df <- read_csv("http://goo.gl/PmPkaG")
+```
+範例資料<font color="green">cust.df</font>為連鎖零售店家顧客銷售數據，在進行下一段程式碼前，先大致說明此銷售數據的各變數。
+
+變數              |說明
+------------------|-------------
+cust.id           | 每位顧客的編號
+age               | 該客戶的年紀
+credit.score      | 該客戶的信用評分
+email             | 該客戶的電子信箱
+distance.to.store | 離該客戶居住地最近的實體零售店
+online.visits     | 線上瀏覽次數
+online.trans      | 線上消費次數
+online.spend      | 總線上消費金額
+store.trans       | 實體店光顧次數
+store.spend       | 實體店總消費金額
+sat.service       | 服務滿意度
+sat.selection     | 產品選擇滿意度
+
+```{r warning=FALSE}
+# 使用summary()函數快速檢視資料的基本統計量
+# summary()為R基本函數，此函數可快速檢視資料的粗略結構，如極值、平均數、四分位數等基本統計量。
+summary(cust.df)
+
+# str()為Utils套件提供的方法，可用於檢視各欄位的資料型態
+str(cust.df)
+
+# 另一個很實用，可於檢視資料基本結構的函數是psych套件提供的describe()
+describe(cust.df)
+
+# 使用ggplot2的繪圖函數繪製基本的散佈圖，探索兩變數間的關係。
+# 在範例二時有提到ggplot2是採用圖層的概念進行繪圖。既然是圖層，表示可用兩種模式進行繪圖。
+# 一種就是一次性的將所有要呈現的圖層疊加起來，另一種方式則是分段累加。
+
+# 方法一: 一次性描述
+ggplot(data=cust.df, aes(age, credit.score, color=sat.service)) + geom_point()
+
+# 方法二: 一層一層疊加
+p <- ggplot(data=cust.df, aes(age, credit.score))
+p <- p + geom_point()
+(p <- p + aes(color=sat.service))
+
+# 將圖層設定完成後，接下來對有文字的部分進行處理
+# 設定各軸標籤文字
+p <- p + theme(text=element_text(family="黑體-繁 中黑")) # 設定字型，解決ggplot2無法顯示中文的問題
+p <- p + labs(x="年齡")
+p <- p + labs(y="顧客信用評分")
+p <- p + labs(title="2014年六月之活躍顧客散佈圖") 
+(p <- p + labs(colour="服務滿意度"))
+
+
+# 增加輔助線，如水平線或鉛直線
+p <- p + geom_hline(yintercept=mean(cust.df$credit.score))
+(p <- p + geom_vline(xintercept=mean(cust.df$age), color="dark blue", linetype="dotted"))
+
+# 最後我們來探討一個常見的情境:『線上總花費金額與實體店總消費金額是否呈現負相關?』
+# 也就是如果顧客在線上消費越多，是否在實體店面消費就越少?
+ggplot(data=cust.df, aes(x=store.spend, y=online.spend, color=sat.service)) + 
+  geom_point() + 
+  labs(x="前十二個月店內消費 ($)", y="前十二的月線上消費($)",
+       title="2014年六月顧客消費", colour="服務滿意度") + 
+  theme(text=element_text(family="黑體-繁 中黑"))
+```
+

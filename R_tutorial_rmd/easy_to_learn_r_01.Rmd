@@ -1,0 +1,227 @@
+---
+title: "Why R"
+author: "Will Kuan"
+date: "2017/6/28"
+output: ioslides_presentation
+---
+
+## 大數據與非結構化資料 
+在大數據為顯學的現今，以及資訊科技的快速發展下，非結構化(unstructured)與半結構化(semi-structured)資料的價值獲得更大的關注。與此同時，對於半結構化與非結構化資料的劇增，結構化資料(structured data)的處理方法也更為重要。<br>
+
+<div class="red2">為什麼我們更需要了解如何處理結構化資料?</div>
+所有半結構化與非結構化的資料都必須轉換成結構化資料才能進行分析。
+
+<div class="red2">轉換成結構化資料有什麼好處?</div>
+結構化資料方便儲存於傳統的關聯式資料庫，且關聯式資料庫隨著幾十年的演進已建立系統化的處理規則，加上數學家與科學家們為線性代數帶來的蓬勃發展與諸多計算方法。
+
+## 認識變數
+<div class="red2">回想一下國中時為什麼數學課要使用x,y,x這些字母?</div>
+因為我們需要計算，而計算的對象可能是5，可能是9，抑或是其他數字，在面對這種不確定性的情況下，我們先用一個標籤來代替未知的數字進行運算，當我們確定數字後，將數字代入運算的結果就可以快速得到答案。
+
+變數就是這種標籤。在程式裡，變數為充滿不確定性的人機互動下帶來了極大的彈性。
+
+## 認識變數
+如果我們替5這個數字貼上一個標籤X，則
+$y=3^{(\pi+x)}-1$這行方程式當然可以寫成$y=3^{(\pi+5)}-1$進行運算，
+但如果今天x這個標籤貼在5身上，明天貼在7身上，後天貼在9身上，在沒有使用變數的情況下，我們每天都要在程式裡寫下大同小異的方程式，會非常浪費時間而且浪費硬碟空間，以及不容易維護。<br>
+
+若有了變數這個概念，我們只要維護$y=3^{(\pi+x)}-1$這行方程式，今天代入5，明天代入7，後天代入9，不需要寫三次方程式，卻同樣可以得到三個答案。
+
+## 算術運算
+
+```{r, eval=TRUE, echo=TRUE}
+100 + 3
+```
+
+```{r, eval=TRUE, echo=TRUE}
+100 - 3
+```
+
+```{r, eval=TRUE, echo=TRUE}
+100 * 3
+```
+
+```{r, eval=TRUE, echo=TRUE}
+100 / 3
+```
+
+## 算術運算
+
+```{r, eval=TRUE, echo=TRUE}
+100 %% 3
+```
+
+```{r, eval=TRUE, echo=TRUE}
+100 ^ 3 ; 100 ** 3
+```
+
+## 算術運算
+
+以上所有的運算式都可以使用變數進行運算。假設我們宣告兩個變數x和y，各自賦予100和3兩個值。
+```{r, eval=TRUE, echo=TRUE}
+x <- 100 ; y <- 3
+```
+
+```{r, eval=TRUE, echo=TRUE}
+x + y
+x - y 
+```
+
+## 算術運算
+```{r, eval=TRUE, echo=TRUE}
+x * y 
+x / y
+x %% y
+x ^ y
+```
+
+## 資料型態(Data Type)
+面對大數據的4種特性，俗稱4V，也就是大(Volume)、快(Velocity)、雜(Variety)、疑(Veracity)，我們勢必需要處理各種不同類型的資料，這正是「雜」，代表的是資料的多樣性，尤其非結構化的資料，如文章，我們勢必無法將文章當作數值儲存在電腦中。R是為統計而生的程式語言，那麼我們期望R裡面的基本的資料型態應該不會只有數值吧。
+
+## 資料型態(Data Type)
+
+資料型態            |資料型態英文     |範例
+--------------------|-----------------|-----
+數值(雙倍精確實數)  |numeric(double)  |100
+整數                |integer          |100L
+複數                |complex          |100i
+邏輯值              |logical          |TRUE
+文字                |character        |"Hello World"
+日期                |Date             |Sys.Date()
+時間                |POSIXct POSIXt   |Sys.time()
+
+## 資料型態(Data Type)
+
+<font color="black">如何檢視資料型態:<br> </font><font color="red2">class()</font>、<font color="red2">mode()</font>與<font color="red2">typeof()</font>函式為R內建的基本方法，可用於檢視物件的型態
+
+## 資料型態(Data Type)
+演練:
+```{r}
+myNum <- 100;  # 宣告變數myNum，並賦值100給變數myNum
+class(myNum);  # 檢視myNum代表的資料適何種資料類型
+```
+
+```{r}
+myInt <- 100L;
+class(myInt);
+```
+
+```{r}
+myBoolean <- FALSE; # 亦可用小寫或縮寫表示，如false/true或F/T，但不建議。
+class(myBoolean);
+```
+
+## 資料型態(Data Type)
+演練:
+```{r}
+myText <- "Hello World!";
+typeof(myText);
+```
+
+```{r}
+myDate <- Sys.Date();
+print(myDate);
+typeof(myDate);
+```
+
+## 資料型態(Data Type)
+演練:
+```{r}
+(myTime <- Sys.time());
+class(myTime);
+```
+
+## 變數的命名與指派(Declare & Assignment)
+在Perl程式語言界，駝峰式(Camel-Case)命名已變成大家約定俗成的規則，無強制性，然而這套規則卻影響了其他程式語言使用者的code style。相較於其他程式語言的使用者領域範疇，R的使用者更多元，有各種學院的教授、財金專家、政治學專家及統計學家等非資訊科學領域的使用者，故IT界已約定俗成的命名慣例在R語言界因多元使用者，以及R的開源似乎不存在了。
+
+即便R被許多純IT人視為非正統語言，但R畢竟是一種程式語言，希望大家在命名方面盡量遵照大家已習慣的命名模式，以便後續他人維護與協作時的可讀性。
+
+<div class="blue">小駝峰式:</div> 變數名稱是由二個或多個單字連結在一起，而構成的唯一識別字時，第一個單字以小寫字母開始，第二個單字之後的每個單字首字母為大寫，例如：firstName、myLastBook。
+
+## 變數的命名與指派(Declare & Assignment)
+另一種R使用者常見且獨有的命名規則為句點分隔式，例如：first.name、pitcher.strikeout.mlb <br>
+
+[參考Google內部對R Code Style的規範(英文)](https://google.github.io/styleguide/Rguide.xml)
+
+[參考Google內部對R Code Style的規範(簡中)](https://nanx.me/rstyle/)
+
+<div class="red2">*R 變數命名上，大小寫是有區別的，例如 x 與 X 其實是不同的變數*</div>
+
+## 變數的命名與指派(Declare & Assignment)
+一般程式語言的賦值方式為「=」，例如: x = "hello world"
+```{r}
+x = "hello world";  # 賦予x一個值
+x                   # 呼叫x
+```
+
+## 變數的命名與指派(Declare & Assignment)
+R的賦值方式有五種，「=」、「<-」、「<<-」、「->」、「->>」
+```{r}
+y <- "hello kitty"  ;  "hello goofy" -> a   ;
+z <<- "hello snoopy";  "hello cookie" ->> b ;
+
+y; z; a; b;
+```
+
+## 變數的命名與指派(Declare & Assignment)
+一般R給予變數值是利用「<-」，而非常見的「=」，因為R在某些情況下使用「=」賦值會失效。<br>
+
+操作RStudio時，「<-」的快捷鍵是『Alt』 + 『-』，所以不用擔心「<-」這個符號不易輸入。<br>
+
+通常大部分情況下，使用「=」並不會出現錯誤，所以仍有許多人習慣使用「=」進行賦值，不過仍不建議使用「=」進行變數賦值。
+
+## 收集變數
+當我們有一大堆變數，卻擁有類似的值，似乎很浪費儲存資源，那麼理想的做法是什麼？<br>
+<font color="black">Box，如果有一個盒子可以將這些類似的東西整齊的裝在一起，應該可以幫助我們大大提升儲存、分類、提取的效率。</font>
+
+R的第一種盒子是c()函數，c的意義為concatenate的縮寫，也可以視為combine的縮寫。這個函數是將向量元素連接起來，也就是將"任意"變數集結在一個向量裡。
+
+## 收集變數
+演練:
+```{r}
+freeShot.curry <- c(10, 8, 12, 9, 13);
+freeShot.curry;
+```
+
+```{r}
+player.stats <- c("S. Curry", 10, 8, 12, 9, 13);
+player.stats;
+```
+
+```{r}
+player.profile <- "S. Curry";   freeShot.curry <- c(10, 8, 12, 9, 13);
+player.stats <- c(player.profile, freeShot.curry);
+player.stats;
+```
+
+## 收集變數
+
+當我們把變數整齊的裝進盒子裡後，要如何取出我們想要的變數?
+其實盒子裡的各個東西已經過整齊的擺設了，就如同我們去戲院看電影，我們每個人在戲院裡的位置都是有編號的。索引值(index)就是程式裡某一個物件在一團物件裡的編號，一般的程式語言的索引值是從0開始算起，但R是從1開始。
+
+演練:
+```{r}
+freeShot.curry <- c(10, 8, 12, 9, 13);
+freeShot.curry[1];
+freeShot.curry[3];
+```
+
+## 收集變數
+```{r}
+freeShot.curry <- c(10, 8, 12, 9, 13);
+freeShot.curry[c(2,5)];
+freeShot.curry[length(freeShot.curry)];  # length()函數可求得向量的長度
+```
+
+## 收集變數
+試玩看看以下函數:<br>
+
+<font color="red">rep()</font>:建立規律性重複元素的向量<br>
+
+<font color="red">seq()</font>:建立等差數列的向量<br>
+
+<font color="red">numeric()</font>:建立一堆0的向量<br>
+
+
+
+
